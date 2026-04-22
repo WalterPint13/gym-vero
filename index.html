@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Rutina Semanal</title>
+
+<style>
+body{
+    font-family: Arial;
+    background:#f5f5f5;
+    margin:0;
+    padding:20px;
+}
+
+h1{text-align:center;}
+
+select{
+    display:block;
+    margin:10px auto;
+    padding:10px;
+    font-size:16px;
+}
+
+.card{
+    background:white;
+    padding:15px;
+    margin:15px auto;
+    max-width:750px;
+    border-radius:12px;
+    box-shadow:0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* IMAGENES MÁS PEQUEÑAS */
+.exercise img{
+    width:100%;
+    max-width:240px;
+    height:140px;
+    object-fit:cover;
+    border-radius:10px;
+    display:block;
+    margin:0 auto 10px auto;
+}
+
+.exercise{
+    margin-bottom:25px;
+    padding-bottom:15px;
+    border-bottom:1px solid #ddd;
+    text-align:center;
+}
+
+.sets{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    justify-content:center;
+    margin-top:10px;
+}
+
+/* SERIES */
+.set-btn{
+    padding:10px 14px;
+    border-radius:20px;
+    border:none;
+    cursor:pointer;
+    background:#f7c6d9;
+    font-weight:bold;
+}
+
+.set-btn.done{
+    background:#a8e6a3;
+}
+
+/* DESCANSO */
+.rest-btn{
+    margin-top:12px;
+    padding:10px 16px;
+    border-radius:25px;
+    border:none;
+    cursor:pointer;
+    background:#111;
+    color:white;
+    font-weight:bold;
+}
+
+.rest-btn.running{
+    background:#f39c12;
+}
+
+.rest-btn.done{
+    background:#27ae60;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>RUTINA SEMANAL</h1>
+
+<img src="descarga.jpg" style="max-width:750px;display:block;margin:0 auto 20px auto;border-radius:10px;">
+
+<select id="day">
+<option>Lunes</option>
+<option>Martes</option>
+<option>Miércoles</option>
+<option>Viernes</option>
+</select>
+
+<div id="content"></div>
+
+<script>
+
+const REST_TIME = 180;
+let timers = {};
+
+/* 📌 RUTINA CON TUS LINKS EXACTOS */
+const routine = {
+
+"Lunes":{
+title:"GLÚTEO FUERTE",
+exercises:[
+{name:"Hip Thrust 4 x 8-12",img:"https://www.fitfiu-fitness.com/blog-fitness/wp-content/uploads/2022/09/hip-thrust-con-barra-correcto.jpg",sets:4},
+{name:"Prensa de piernas 4 x 10-15",img:"https://static.vecteezy.com/system/resources/previews/017/582/392/non_2x/woman-doing-leg-press-exercise-on-machine-flat-illustration-isolated-on-white-background-vector.jpg",sets:4},
+{name:"Peso muerto rumano 3 x 8-12",img:"https://www.hola.com/horizon/original_aspect_ratio/de54c939487b-adobestock485034129.jpg",sets:3},
+{name:"Abductores en máquina 3 x 15-20",img:"https://static.vecteezy.com/system/resources/previews/008/631/414/non_2x/woman-doing-exercise-using-adduction-inner-thigh-machine-adductor-abductor-flat-illustration-isolated-on-white-background-vector.jpg",sets:3},
+{name:"Patada de glúteo 3 x 12-15",img:"https://i.pinimg.com/736x/3d/3e/7f/3d3e7f809cbbb00b2f5db9e4788e2f67.jpg",sets:3}
+]
+},
+
+"Martes":{
+title:"TREN SUPERIOR",
+exercises:[
+{name:"Jalón al pecho 3 x 8-12",img:"https://static.vecteezy.com/system/resources/previews/006/417/767/large_2x/woman-doing-seated-lat-pulldowns-flat-illustration-isolated-on-white-background-free-vector.jpg",sets:3},
+{name:"Remo 3 x 10-12",img:"https://static.vecteezy.com/system/resources/previews/006/417/635/non_2x/woman-doing-seated-low-cable-back-rows-exercise-flat-illustration-isolated-on-white-background-free-vector.jpg",sets:3},
+{name:"Elevaciones laterales 3 x 12–15",img:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQlPlRGKF743q14x4XhH90AtW7-BpJDIqFJEg&s",sets:3},
+{name:"Press de hombro 2–3 x 10–12",img:"https://static.vecteezy.com/system/resources/previews/006/417/683/non_2x/woman-doing-dumbbell-overhead-shoulder-press-exercise-flat-illustration-isolated-on-white-background-free-vector.jpg",sets:3},
+{name:"Curl de bíceps 2–3 x 10–12",img:"https://us.123rf.com/450wm/lioputra/lioputra2107/lioputra210700031/171257410-mujer-haciendo-ejercicio-de-rizos-inversos-de-b%C3%ADceps-con-mancuernas-ilustraci%C3%B3n-de-vector-plano.jpg?ver=6",sets:3},
+{name:"Tríceps en polea 2–3 x 10–12",img:"https://static.vecteezy.com/system/resources/previews/016/137/875/non_2x/woman-doing-cable-rope-tricep-pull-down-or-push-exercise-flat-illustration-isolated-on-white-background-vector.jpg",sets:3}
+]
+},
+
+"Miércoles":{
+title:"GLÚTEO AISLAMIENTO",
+exercises:[
+{name:"Hip Thrust 3 x 12–15",img:"https://www.fitfiu-fitness.com/blog-fitness/wp-content/uploads/2022/09/hip-thrust-con-barra-correcto.jpg",sets:3},
+{name:"Abductores en máquina 4 x 15–20",img:"https://static.vecteezy.com/system/resources/previews/008/631/414/non_2x/woman-doing-exercise-using-adduction-inner-thigh-machine-adductor-abductor-flat-illustration-isolated-on-white-background-vector.jpg",sets:4},
+{name:"Patada de glúteo 3 x 12–15",img:"https://i.pinimg.com/736x/3d/3e/7f/3d3e7f809cbbb00b2f5db9e4788e2f67.jpg",sets:3},
+{name:"Puente de glúteo 3 x 15–20",img:"https://www.shutterstock.com/image-vector/woman-doing-glute-bridge-resistance-260nw-2006918432.jpg",sets:3},
+{name:"Caminata lateral con banda 3 x 15–20",img:"https://www.shutterstock.com/image-vector/woman-doing-lateral-band-walk-260nw-2117889620.jpg",sets:3}
+]
+},
+
+"Viernes":{
+title:"GLÚTEO + PIERNA",
+exercises:[
+{name:"Hip Thrust 4 x 8–12",img:"https://www.fitfiu-fitness.com/blog-fitness/wp-content/uploads/2022/09/hip-thrust-con-barra-correcto.jpg",sets:4},
+{name:"Sentadilla 3 x 8–12",img:"https://static.vecteezy.com/system/resources/previews/008/418/359/non_2x/man-doing-hack-squat-exercise-flat-illustration-isolated-on-white-background-vector.jpg",sets:3},
+{name:"Prensa de piernas 3 x 10–15",img:"https://static.vecteezy.com/system/resources/previews/017/582/392/non_2x/woman-doing-leg-press-exercise-on-machine-flat-illustration-isolated-on-white-background-vector.jpg",sets:3},
+{name:"Curl femoral 3 x 10–15",img:"https://www.shutterstock.com/image-vector/woman-doing-lying-leg-curls-600w-2310949245.jpg",sets:3},
+{name:"Abductores en máquina 3 x 15–20",img:"https://static.vecteezy.com/system/resources/previews/008/631/414/non_2x/woman-doing-exercise-using-adduction-inner-thigh-machine-adductor-abductor-flat-illustration-isolated-on-white-background-vector.jpg",sets:3}
+]
+}
+};
+
+/* RENDER */
+function render(){
+const day=document.getElementById("day").value;
+const data=routine[day];
+
+let html=`<div class="card"><h2>${data.title}</h2>`;
+
+data.exercises.forEach((ex,i)=>{
+
+html+=`
+<div class="exercise">
+<img src="${ex.img}">
+<h3>${ex.name}</h3>
+
+<div class="sets">
+`;
+
+for(let s=0;s<ex.sets;s++){
+html+=`
+<button class="set-btn" onclick="this.classList.toggle('done')">
+Serie ${s+1}
+</button>
+`;
+}
+
+html+=`
+</div>
+
+<button class="rest-btn" id="r_${i}" onclick="toggleRest('${i}')">
+Descanso 3:00
+</button>
+
+</div>
+`;
+});
+
+html+="</div>";
+document.getElementById("content").innerHTML=html;
+}
+
+/* TIMER */
+function toggleRest(id){
+
+const btn=document.getElementById("r_"+id);
+
+if(timers[id]){
+clearInterval(timers[id]);
+delete timers[id];
+btn.innerText="Reanudar descanso";
+return;
+}
+
+let time=REST_TIME;
+
+btn.classList.add("running");
+
+timers[id]=setInterval(()=>{
+
+time--;
+
+let m=Math.floor(time/60);
+let s=time%60;
+
+btn.innerText=`⏱ ${m}:${s.toString().padStart(2,"0")}`;
+
+if(time<=0){
+clearInterval(timers[id]);
+delete timers[id];
+btn.innerText="✔ Listo";
+btn.classList.add("done");
+btn.classList.remove("running");
+}
+},1000);
+}
+
+/* INIT CORRECTO */
+const selector=document.getElementById("day");
+selector.addEventListener("change",render);
+
+window.addEventListener("DOMContentLoaded",()=>{
+selector.value="Lunes";
+render();
+});
+
+</script>
+
+</body>
+</html>
